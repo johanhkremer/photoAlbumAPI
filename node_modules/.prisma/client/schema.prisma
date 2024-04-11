@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Album {
+  //Attributes
+  id     Int     @id @default(autoincrement()) @db.UnsignedInt
+  title  String
+  //Relations
+  photos Photo[] //n:n many photos can belog to many albums
+  userId Int     @db.UnsignedInt //1:n one album belongs to one user
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+model Photo {
+  //Attributes
+  id      Int     @id @default(autoincrement()) @db.UnsignedInt
+  title   String
+  url     String
+  comment String?
+  //Relations
+  albums  Album[] //n:n many albums can belong to many photos
+  userId  Int     @db.UnsignedInt //1:n one photo belongs to one user
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  //Attributes
+  id         Int     @id @default(autoincrement()) @db.UnsignedInt
+  email      String  @unique
+  password   String
+  first_name String
+  last_name  String
+  //Relations
+  albums     Album[] //1:n one user can have many albums
+  photos     Photo[] //1:n one user can have many photos
+}
+
+//npx prisma format
